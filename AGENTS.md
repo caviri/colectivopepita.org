@@ -20,9 +20,10 @@ tools/preprocess/    Node pipeline: OBJ -> Meshopt GLB, PNG -> WebP, asset-meta.
 scripts/             deploy_space.py, sync_assets.py
 tests/               pytest suite for the gate
 docs/                scene-authoring.md, 3dmodelingguide.md
-Dockerfile           what Hugging Face builds (copies server/, src/, data/)
-.github/workflows/   ci.yml, deploy.yml (push to main -> Space), sync-assets.yml (manual)
-data/                runtime assets. GITIGNORED, fetched from the HF bucket (`just assets`)
+Dockerfile           what Hugging Face builds (copies server/ and src/, symlinks /data)
+.github/workflows/   ci.yml, deploy.yml (push to main -> Space)
+data/                runtime assets. GITIGNORED locally (`just assets`); in prod it is the HF bucket
+                     mounted read-only at /data and symlinked to /app/data
 ```
 
 ## Commands
@@ -64,7 +65,7 @@ Run `just check` and `just test` before you call a change done. For anything vis
 - **`data/` is not in git** and must never be committed. Only `optimized/`, `scenes/`, `videos/`,
   `photo/` and three JSON files are used at runtime; the bucket holds ~11 GB more.
 - **Deploying is outward-facing.** Pushing to `main` redeploys the live site
-  (colectivopepita.org). Don't push to `main` or run `just deploy` / `sync-assets` unless asked.
+  (colectivopepita.org). Don't push to `main` or run `just deploy` unless asked.
 - The first deploy prunes legacy template files from the Space (`LEGACY` in
   `scripts/deploy_space.py`).
 

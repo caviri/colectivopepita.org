@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Stage the deployable code and upload it to the Hugging Face Space.
 
-Only code is uploaded. The heavy runtime assets already live in the Space repo
-under data/ (put there by sync_assets.py) and are never touched or deleted here.
+Only code is uploaded. The heavy runtime assets come from the HF bucket that the
+Space mounts at /data, so they are not part of this upload.
 
     python scripts/deploy_space.py            # stage + upload
     python scripts/deploy_space.py --dry-run  # stage only, into build/space
@@ -23,7 +23,7 @@ CODE = ["Dockerfile", "index.html", "dev.html", "server", "src"]
 
 # Space-side prefixes this deploy owns. Anything under them that is not in the
 # staged tree is deleted, so removed source files disappear from the Space too.
-# data/ is deliberately absent. The legacy entries prune files left over from
+# data/ is deliberately absent (it is a bucket mount, not repo content). The legacy entries prune files left over from
 # the pre-clean-repo template deploy.
 OWNED = ["src/**", "server/**", "Dockerfile", "index.html", "dev.html"]
 LEGACY = [

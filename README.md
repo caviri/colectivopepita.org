@@ -19,8 +19,9 @@ Dockerfile      what Hugging Face builds
 ```
 
 Heavy assets (~11 GB of source models) are not in git. They live in a private
-HF bucket, and only the runtime subset (`optimized/`, `scenes/`, `videos/`, `photo/`
-and three JSON files) is copied into the Space and into local `data/`.
+HF bucket. The Space mounts that bucket read-only at `/data` (Space settings, Volumes),
+and the Dockerfile symlinks it to `/app/data`. For local dev, `just assets` downloads only the
+runtime subset (`optimized/`, `scenes/`, `videos/`, `photo/` and three JSON files) into `./data`.
 
 ## Run locally
 
@@ -43,16 +44,16 @@ push to main ──> deploy.yml ──> scripts/deploy_space.py ──> HF Space
 
 1. `ci.yml` runs on every branch and PR: ruff, `node --check` on all JS, pytest, and a staging dry run.
 2. `deploy.yml` runs on push to `main`. It re-runs lint and tests, stages the code
-   (`Dockerfile`, `server/`, `src/`, root HTML) and uploads it to the Space. It never touches `data/`.
-3. `sync-assets.yml` is manual. It copies the runtime subset from the bucket into
-   the Space's `data/`. Run it after changing the bucket.
+   (`Dockerfile`, `server/`, `src/`, root HTML) and uploads it to the Space.
+
+Assets need no deploy step: the bucket is mounted live, so changing the bucket changes the site.
 
 One-time setup in the GitHub repo:
 
 | Where | Name | Value |
 | --- | --- | --- |
 | Secret | `HF_TOKEN` | fine-grained token with write access to the Space and read access to the bucket |
-| Variable (optional) | `HF_SPACE` / `HF_BUCKET` | defaults to `katospiegel/colectivo-pepita` |
+| Variable (optional) | `HF_SPACE` | defaults to `katospiegel/colectivo-pepita` |
 
 The `APP_PASSWORD` that gates the site is a **Space secret** set in the HF settings, not a GitHub secret.
 Without it the server refuses all logins (fails closed).
@@ -67,7 +68,7 @@ node tools/preprocess/run.mjs --force    # re-encode everything
 ```
 
 It reads `data/` and writes `data/optimized/` and `data/asset-meta.json`. Push the result
-to the bucket with `hf buckets sync ./data hf://buckets/<id>`, then run the **Sync assets** workflow.
+to the bucket with `hf buckets sync ./data hf://buckets/<id>`; the live site sees it immediately.
 
 ## Development
 
