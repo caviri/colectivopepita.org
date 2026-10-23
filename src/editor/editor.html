@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Engine — Editor</title>
+        <link rel="stylesheet" href="./styles.css" />
+        <script type="importmap">
+            {
+                "imports": {
+                    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <header id="topbar">
+            <strong>engine ✦ editor</strong>
+            <span class="dim" id="scene-name">— no scene loaded —</span>
+            <span class="spacer"></span>
+            <button id="btn-graph" title="Knowledge graph — force-directed view of properties + rules">Graph</button>
+            <button id="btn-matrix" title="Space of possibles — property × property rule matrix">Matrix</button>
+            <button id="btn-save">Save</button>
+            <button id="btn-play" title="Open this scene in /play.html">▶ Play</button>
+        </header>
+
+        <aside id="left">
+            <section class="panel" id="panel-levels">
+                <h3>Levels</h3>
+                <div id="level-list"></div>
+                <div class="panel-actions">
+                    <button id="lvl-new">New</button>
+                    <button id="lvl-dup" disabled>Duplicate</button>
+                    <button id="lvl-del" disabled>Delete</button>
+                </div>
+                <div class="panel-actions">
+                    <button id="lvl-export" disabled>Export JSON</button>
+                    <label class="btn-label">
+                        Import
+                        <input id="lvl-import" type="file" accept="application/json" hidden />
+                    </label>
+                </div>
+            </section>
+            <section class="panel" id="panel-assets">
+                <h3>Assets</h3>
+                <div id="asset-tabs">
+                    <button class="tab active" data-tab="primitives">Primitives</button>
+                    <button class="tab" data-tab="models">Models</button>
+                </div>
+                <div id="asset-grid"></div>
+                <p class="hint">Click to spawn at origin.</p>
+            </section>
+        </aside>
+
+        <main id="viewport-wrap" class="layout-single">
+            <div id="gizmo-toolbar">
+                <button data-mode="translate" class="active" title="Translate (T)">⤧</button>
+                <button data-mode="rotate" title="Rotate (R)">⟳</button>
+                <button data-mode="scale" title="Scale (S)">⤢</button>
+                <span class="sep"></span>
+                <button id="btn-snap" title="Snap to grid (X)">⊞</button>
+                <span class="sep"></span>
+                <button id="btn-fit" title="Frame all entities (F)">⊕</button>
+                <button id="btn-fit-sel" title="Frame selection (Shift+F)">⌖</button>
+                <button id="btn-fly" title="Fly mode — WASD + mouse-look · Space up · Ctrl down · Shift sprint · Esc to exit (G)">✈</button>
+                <span class="sep"></span>
+                <button id="btn-fog" title="Toggle fog">≈</button>
+                <button id="btn-quad" title="Toggle quad view (Q)">⊞⊞</button>
+            </div>
+            <div id="fly-hint" hidden>
+                Fly mode · WASD move · Space/Ctrl up/down · Shift sprint · Esc to exit
+            </div>
+        </main>
+
+        <aside id="right">
+            <section class="panel" id="panel-hierarchy">
+                <h3>Hierarchy</h3>
+                <div id="hierarchy-list"></div>
+            </section>
+            <section class="panel" id="panel-tabs">
+                <div id="right-tabs">
+                    <button class="tab active" data-tab="inspector">Inspector</button>
+                    <button class="tab" data-tab="pool">Pool</button>
+                    <button class="tab" data-tab="rules">Rules</button>
+                </div>
+                <div id="tab-inspector" class="tab-pane active">
+                    <div id="inspector-body">
+                        <p class="hint">No selection.</p>
+                    </div>
+                </div>
+                <div id="tab-pool" class="tab-pane">
+                    <div id="pool-body"></div>
+                </div>
+                <div id="tab-rules" class="tab-pane">
+                    <div id="rules-body"></div>
+                </div>
+            </section>
+        </aside>
+
+        <div id="modal-root"></div>
+
+        <pre id="error"></pre>
+        <script type="module" src="./editor.js"></script>
+    </body>
+</html>

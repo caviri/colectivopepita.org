@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Antarctic Sampler — dev nav</title>
+        <style>
+            :root {
+                color-scheme: light dark;
+                --bg: #f4ead5;
+                --fg: #2a1f10;
+                --accent: #b33a1a;
+                --muted: #8a7860;
+                --card: #fffdf6;
+                --line: #d8caa8;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --bg: #1a1410;
+                    --fg: #f4ead5;
+                    --accent: #ffe156;
+                    --muted: #8a7860;
+                    --card: #25201a;
+                    --line: #3a3026;
+                }
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--fg);
+                font: 15px/1.55 system-ui, -apple-system, sans-serif;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 32px 16px;
+                box-sizing: border-box;
+            }
+            main {
+                max-width: 720px;
+                width: 100%;
+            }
+            h1 {
+                font-size: 22px;
+                margin: 0 0 4px;
+                letter-spacing: 0.5px;
+            }
+            .lede {
+                color: var(--muted);
+                margin: 0 0 24px;
+                font-size: 13px;
+            }
+            section {
+                background: var(--card);
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 14px 16px;
+                margin: 0 0 14px;
+            }
+            section h2 {
+                margin: 0 0 4px;
+                font-size: 13px;
+                text-transform: uppercase;
+                letter-spacing: 1.2px;
+                color: var(--muted);
+            }
+            ul {
+                list-style: none;
+                padding: 0;
+                margin: 6px 0 0;
+            }
+            li {
+                padding: 6px 0;
+                border-bottom: 1px dashed var(--line);
+            }
+            li:last-child { border-bottom: none; }
+            a {
+                color: var(--accent);
+                text-decoration: none;
+                font-weight: 600;
+            }
+            a:hover { text-decoration: underline; }
+            .desc {
+                display: block;
+                color: var(--muted);
+                font-weight: 400;
+                font-size: 13px;
+                margin-top: 1px;
+            }
+            kbd {
+                background: var(--bg);
+                border: 1px solid var(--line);
+                border-radius: 3px;
+                padding: 1px 5px;
+                font-size: 11px;
+                font-family: ui-monospace, monospace;
+            }
+            footer {
+                color: var(--muted);
+                font-size: 12px;
+                text-align: center;
+                margin-top: 16px;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <h1>Antarctic Sampler — dev nav</h1>
+            <p class="lede">Internal. Lists every entry point in this repo so you don't have to remember URLs. Bookmark this page.</p>
+
+            <section>
+                <h2>Legacy game (production)</h2>
+                <ul>
+                    <li><a href="/src/">Welcome menu</a><span class="desc">index.html — landing page with New Game / Editor / Museum</span></li>
+                    <li><a href="/src/outdoor.html">Outdoor scene</a><span class="desc">main.js — Antarctic outdoor world, mining, hotbar, manual, todo, minimap</span></li>
+                    <li><a href="/src/lab.html">Red lab</a><span class="desc">lab.js — interior of the JCI red building</span></li>
+                    <li><a href="/src/lab2.html">Container lab</a><span class="desc">lab2.js — shipping-container lab</span></li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Engine (data-driven, in development)</h2>
+                <ul>
+                    <li><a href="/src/play.html?scene=_test">Smoke test scene</a><span class="desc">4 entities: metal cube, wood cube, ground, and a Pickup</span></li>
+                    <li><a href="/src/play.html?scene=main">main.json</a><span class="desc">19-entity stub of the outdoor scene</span></li>
+                    <li><a href="/src/play.html?scene=lab1">lab1.json</a><span class="desc">34-entity stub of the red lab</span></li>
+                    <li><a href="/src/play.html?scene=lab2">lab2.json</a><span class="desc">3-entity stub of the container lab</span></li>
+                    <li><a href="/src/play.html?scene=museum">Polar Heritage Museum</a><span class="desc">museum.json — five-gallery interactive level: lobby · materials · soundscape · aurora · discovery pit</span></li>
+                    <li><a href="/src/editor/editor.html">Scene editor</a><span class="desc">Author scenes; saves to IndexedDB; ▶ Play opens /play.html</span></li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Manual</h2>
+                <ul>
+                    <li><a href="/dev/build/index.html">Web manual</a><span class="desc">242-page HTML build</span></li>
+                    <li><a href="/dev/build/manual.pdf">PDF</a><span class="desc">~25 MB</span></li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Useful CLI</h2>
+                <ul>
+                    <li><kbd>just play</kbd> — live-server on :8888</li>
+                    <li><kbd>just dev 8000</kbd> — static server on :8000</li>
+                    <li><kbd>python3 scripts/inventory-heroes.py</kbd> — manual hero inventory</li>
+                    <li><kbd>python3 scripts/build-manual.py</kbd> — rebuild PDF + HTML</li>
+                    <li><kbd>just flowkit-status</kbd> — FlowKit backend health</li>
+                </ul>
+            </section>
+
+            <footer>Pages under <code>/src/</code> need <kbd>just play</kbd> running. Pages under <code>/dev/</code> are gitignored.</footer>
+        </main>
+    </body>
+</html>

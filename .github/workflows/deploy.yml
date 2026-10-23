@@ -1,0 +1,29 @@
+name: Deploy to Hugging Face
+
+# Every merge to main re-uploads the code to the Space; HF rebuilds the image.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: pytest
+      - name: Upload to Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE || 'katospiegel/colectivo-pepita' }}
+          DEPLOY_MESSAGE: "deploy: ${{ github.sha }}"
+        run: python scripts/deploy_space.py

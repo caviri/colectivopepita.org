@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Antarctic Sampler</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet" />
+        <style>
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            html, body {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                color: #0d2233;
+                font-family: "Kalam", ui-sans-serif, system-ui, sans-serif;
+                background:
+                    radial-gradient(ellipse at 50% 110%, #ffffff 0%, #d4e8f4 40%, #9cc5dd 80%, #6896b3 100%);
+            }
+
+            /* faint backdrop ridge silhouette so the page feels Antarctic, not blank */
+            .ridge {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100%;
+                height: 38vh;
+                pointer-events: none;
+                opacity: 0.85;
+            }
+
+            main {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 24px;
+                z-index: 2;
+            }
+
+            .title {
+                font-family: "Caveat", cursive;
+                font-weight: 700;
+                font-size: clamp(48px, 9vw, 96px);
+                color: #1a3147;
+                line-height: 1;
+                letter-spacing: 0.5px;
+                text-shadow: 0 2px 0 rgba(255, 255, 255, 0.55);
+                margin-bottom: 6px;
+            }
+
+            .subtitle {
+                font-family: "Kalam", cursive;
+                font-weight: 300;
+                font-size: clamp(14px, 1.6vw, 18px);
+                color: #2d4a63;
+                margin-bottom: 36px;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+
+            .menu {
+                display: flex;
+                flex-direction: column;
+                gap: 14px;
+                width: min(420px, 90vw);
+            }
+
+            .menu-btn {
+                appearance: none;
+                font-family: "Kalam", cursive;
+                font-weight: 700;
+                font-size: 22px;
+                letter-spacing: 0.5px;
+                color: #ffe156;
+                background: rgba(20, 28, 40, 0.82);
+                border: 2px solid rgba(255, 255, 255, 0.25);
+                border-radius: 8px;
+                padding: 16px 22px;
+                cursor: pointer;
+                text-align: left;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+                transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease;
+            }
+
+            .menu-btn:hover {
+                background: rgba(40, 56, 80, 0.92);
+                border-color: rgba(255, 225, 86, 0.65);
+            }
+
+            .menu-btn:active {
+                transform: translateY(1px);
+            }
+
+            .menu-btn:focus-visible {
+                outline: 3px solid #ffe156;
+                outline-offset: 2px;
+            }
+
+            .menu-btn .desc {
+                font-family: "Kalam", cursive;
+                font-weight: 300;
+                font-size: 13px;
+                color: rgba(255, 235, 200, 0.7);
+                letter-spacing: 0.3px;
+            }
+
+            .menu-btn .row {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+
+            .menu-btn .arrow {
+                font-size: 20px;
+                color: rgba(255, 225, 86, 0.7);
+            }
+
+            .menu-btn[disabled],
+            .menu-btn.coming-soon {
+                opacity: 0.85;
+            }
+
+            .menu-btn.coming-soon .badge {
+                font-family: "Kalam", cursive;
+                font-weight: 700;
+                font-size: 10px;
+                letter-spacing: 1.4px;
+                text-transform: uppercase;
+                color: #1a1410;
+                background: #ffe156;
+                padding: 3px 8px;
+                border-radius: 999px;
+            }
+
+            footer {
+                position: fixed;
+                bottom: 14px;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-family: "Kalam", cursive;
+                font-weight: 300;
+                font-size: 12px;
+                color: rgba(13, 34, 51, 0.55);
+                letter-spacing: 0.5px;
+                z-index: 2;
+            }
+
+            #toast {
+                position: fixed;
+                left: 50%;
+                bottom: 80px;
+                transform: translate(-50%, 12px);
+                background: rgba(20, 28, 40, 0.92);
+                color: #ffe156;
+                font-family: "Kalam", cursive;
+                font-weight: 700;
+                font-size: 14px;
+                padding: 10px 18px;
+                border: 2px solid rgba(255, 225, 86, 0.5);
+                border-radius: 6px;
+                letter-spacing: 0.4px;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.18s ease, transform 0.18s ease;
+                z-index: 5;
+            }
+
+            #toast.visible {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        </style>
+    </head>
+    <body>
+        <!-- A simple snowy ridge / horizon. Keeps the page feeling Antarctic without
+             needing an image asset. -->
+        <svg class="ridge" viewBox="0 0 1200 380" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+                <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+                    <stop offset="100%" stop-color="#bfd9e8" stop-opacity="0.95" />
+                </linearGradient>
+                <linearGradient id="mid" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#cee2ee" stop-opacity="0.9" />
+                    <stop offset="100%" stop-color="#88aec5" stop-opacity="0.9" />
+                </linearGradient>
+            </defs>
+            <path fill="url(#mid)" d="M0,180 L120,140 L260,200 L420,120 L580,180 L740,110 L900,170 L1060,130 L1200,180 L1200,380 L0,380 Z" />
+            <path fill="url(#snow)" d="M0,260 L160,220 L320,260 L480,210 L640,250 L800,220 L960,260 L1120,230 L1200,250 L1200,380 L0,380 Z" />
+        </svg>
+
+        <main>
+            <h1 class="title">Antarctic Sampler</h1>
+            <p class="subtitle">Field season · Base Juan Carlos I</p>
+
+            <nav class="menu" aria-label="Main menu">
+                <a class="menu-btn" href="./outdoor.html" data-action="new-game">
+                    <span class="row">
+                        <span>New Game</span>
+                        <span class="desc">Drop into the outdoor base and start collecting samples</span>
+                    </span>
+                    <span class="arrow">›</span>
+                </a>
+                <a class="menu-btn" href="./editor/editor.html" data-action="editor">
+                    <span class="row">
+                        <span>Editor</span>
+                        <span class="desc">Author scenes and rules — saves to the local engine DB</span>
+                    </span>
+                    <span class="arrow">›</span>
+                </a>
+                <button class="menu-btn coming-soon" type="button" data-action="museum" aria-label="Museum (coming soon)">
+                    <span class="row">
+                        <span>Museum</span>
+                        <span class="desc">Walkable exhibits of collected specimens</span>
+                    </span>
+                    <span class="badge">Coming soon</span>
+                </button>
+            </nav>
+
+            <div id="toast" role="status" aria-live="polite"></div>
+        </main>
+
+        <footer>v0.1 · press a button to begin</footer>
+
+        <script>
+            const toast = document.getElementById("toast");
+            let toastTimer = null;
+            function flashToast(msg) {
+                toast.textContent = msg;
+                toast.classList.add("visible");
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => toast.classList.remove("visible"), 2200);
+            }
+
+            document.querySelector('[data-action="museum"]').addEventListener("click", () => {
+                flashToast("Museum is under construction — check back soon.");
+            });
+
+            // Keyboard: 1/2/3 trigger the corresponding button (parity with the
+            // hotbar feel everywhere else in the game).
+            window.addEventListener("keydown", (e) => {
+                if (e.repeat) return;
+                const map = { Digit1: 0, Digit2: 1, Digit3: 2 };
+                const idx = map[e.code];
+                if (idx === undefined) return;
+                const btn = document.querySelectorAll(".menu-btn")[idx];
+                btn?.click();
+            });
+        </script>
+    </body>
+</html>

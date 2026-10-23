@@ -1,0 +1,7 @@
+{
+  "name": "colectivo-pepita",
+  "private": true,
+  "type": "module",
+  "description": "Antarctic Sampler — browser game and scene editor",
+  "license": "MIT"
+}

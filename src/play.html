@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Engine — Play</title>
+        <link rel="stylesheet" href="./style.css" />
+        <style>
+            #engine-hud {
+                position: fixed;
+                top: 12px;
+                left: 12px;
+                z-index: 10;
+                font: 12px/1.4 system-ui, sans-serif;
+                color: #fff;
+                background: rgba(0, 0, 0, 0.4);
+                padding: 8px 10px;
+                border-radius: 6px;
+                pointer-events: none;
+                max-width: 320px;
+            }
+            #engine-hud b { font-weight: 600; }
+            #engine-hud .row { opacity: 0.85; }
+            #engine-error {
+                position: fixed;
+                inset: 12px;
+                color: #ff8a8a;
+                background: rgba(20, 0, 0, 0.85);
+                padding: 14px 16px;
+                font: 13px/1.5 ui-monospace, monospace;
+                white-space: pre-wrap;
+                display: none;
+                border-radius: 6px;
+                z-index: 99;
+            }
+            /* FP zoom vignette — controls.js toggles body.fp-zoom */
+            #vignette {
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                z-index: 5;
+                opacity: 0;
+                transition: opacity 220ms ease;
+                background:
+                    radial-gradient(ellipse at center,
+                        transparent 50%,
+                        rgba(0, 0, 0, 0.65) 100%);
+            }
+            body.fp-zoom #vignette { opacity: 1; }
+        </style>
+        <script type="importmap">
+            {
+                "imports": {
+                    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <canvas id="game"></canvas>
+        <div id="vignette"></div>
+        <div id="engine-hud">
+            <div><b id="hud-scene">Loading…</b></div>
+            <div class="row">WASD move · Shift sprint · Space jump · F use · V first-person · Tab orbit/iso · Q/E rotate</div>
+            <div class="row" id="hud-counts"></div>
+        </div>
+        <pre id="engine-error"></pre>
+        <script type="module" src="./play.js"></script>
+    </body>
+</html>

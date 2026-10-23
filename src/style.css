@@ -1,0 +1,1681 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@300;400;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #cfe6f2;
+    font-family:
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        Segoe UI,
+        Roboto,
+        sans-serif;
+    color: #0d2233;
+}
+
+#game {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    cursor: crosshair;
+}
+
+#hud {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+#hud-top {
+    display: flex;
+    gap: 16px;
+    font-size: 14px;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+#hud-top span {
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(13, 34, 51, 0.15);
+    border-radius: 999px;
+    padding: 6px 12px;
+    backdrop-filter: blur(4px);
+}
+
+#hud-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+#prompt {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -100%);
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+#prompt.visible {
+    opacity: 1;
+}
+
+#prompt > span {
+    display: inline-block;
+    max-width: 60vw;
+    text-align: center;
+    font-family: "Bangers", "Impact", "Arial Black", system-ui, sans-serif;
+    font-size: 46px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #ffe156;
+    text-shadow:
+        -2px -2px 0 #0d0d0d,
+        2px -2px 0 #0d0d0d,
+        -2px 2px 0 #0d0d0d,
+        2px 2px 0 #0d0d0d,
+        0 5px 0 #b33a1a,
+        0 7px 14px rgba(0, 0, 0, 0.55);
+    animation: comic-bob 0.65s ease-in-out infinite alternate;
+}
+
+@keyframes comic-bob {
+    from { transform: rotate(-4deg) translateY(0) scale(1); }
+    to   { transform: rotate(-1deg) translateY(-4px) scale(1.05); }
+}
+
+#hint {
+    font-size: 12px;
+    opacity: 0.65;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+#hint kbd {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(13, 34, 51, 0.3);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 0 5px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10.5px;
+    color: #0d2233;
+}
+
+#vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 40;
+    opacity: 0;
+    transition: opacity 0.22s ease;
+    /* tunnel-vision frame: dark gradient at the edges + a backdrop-blur
+     * that's masked to the same shape, so the centre (where the player
+     * is, in FP) stays sharp and the periphery goes dark + blurry. */
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 28%,
+            rgba(0, 0, 0, 0.55) 68%,
+            rgba(0, 0, 0, 0.95) 100%
+        );
+    -webkit-mask-image: radial-gradient(
+        ellipse at center,
+        transparent 24%,
+        rgba(0, 0, 0, 0.4) 38%,
+        black 70%
+    );
+    mask-image: radial-gradient(
+        ellipse at center,
+        transparent 24%,
+        rgba(0, 0, 0, 0.4) 38%,
+        black 70%
+    );
+    backdrop-filter: blur(8px) saturate(0.85);
+    -webkit-backdrop-filter: blur(8px) saturate(0.85);
+}
+
+#vignette.visible,
+body.fp-zoom #vignette {
+    opacity: 1;
+}
+
+#loader {
+    position: fixed;
+    inset: 0;
+    background: #050709;
+    color: #ffe156;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    transition: opacity 0.7s ease;
+    pointer-events: auto;
+}
+
+#loader.visible {
+    display: flex;
+    opacity: 1;
+}
+
+#loader.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#loader h1 {
+    font-family: "Bangers", "Impact", "Arial Black", sans-serif;
+    font-size: 64px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow:
+        -3px -3px 0 #0d0d0d,
+        3px -3px 0 #0d0d0d,
+        -3px 3px 0 #0d0d0d,
+        3px 3px 0 #0d0d0d,
+        0 6px 0 #b33a1a,
+        0 12px 24px rgba(0, 0, 0, 0.5);
+}
+
+#loader p {
+    margin-top: 22px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 14px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+#loader-bar {
+    width: min(420px, 60vw);
+    height: 8px;
+    margin-top: 18px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 225, 86, 0.35);
+    border-radius: 4px;
+    overflow: hidden;
+    display: none;
+}
+#loader.with-progress #loader-bar { display: block; }
+#loader-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #b33a1a 0%, #ffe156 100%);
+    transition: width 0.18s ease-out;
+}
+#loader-log {
+    margin-top: 12px;
+    max-width: 60vw;
+    height: 14px;
+    overflow: hidden;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: none;
+    opacity: 0.55;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: none;
+}
+#loader.with-progress #loader-log { display: block; }
+
+#todo-list {
+    position: fixed;
+    top: 60px;
+    right: 16px;
+    width: 232px;
+    background: rgba(20, 28, 40, 0.78);
+    border: 2px solid rgba(255, 255, 255, 0.22);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: #eaf4fb;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    line-height: 1.45;
+    z-index: 70;
+    pointer-events: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+#todo-list h3 {
+    margin: 0 0 6px;
+    padding: 0 0 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    font-size: 11px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: #ffe156;
+    font-weight: 700;
+}
+
+#todo-list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#todo-list li {
+    position: relative;
+    padding: 2px 0 2px 18px;
+    color: rgba(234, 244, 251, 0.92);
+    transition:
+        color 0.25s ease,
+        opacity 0.25s ease;
+}
+
+#todo-list li::before {
+    content: "○";
+    position: absolute;
+    left: 0;
+    color: rgba(255, 225, 86, 0.75);
+    font-size: 13px;
+}
+
+#todo-list li.done {
+    color: rgba(234, 244, 251, 0.4);
+    text-decoration: line-through;
+}
+
+#todo-list li.done::before {
+    content: "✓";
+    color: #7ed957;
+}
+
+#new-game {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: rgba(20, 28, 40, 0.75);
+    color: #ffe156;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    z-index: 200;
+    pointer-events: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+#new-game:hover {
+    background: rgba(40, 56, 80, 0.9);
+    border-color: rgba(255, 225, 86, 0.65);
+}
+
+#new-game:active {
+    transform: translateY(1px);
+}
+
+#minimap-wrap {
+    position: fixed;
+    bottom: 90px;
+    right: 16px;
+    z-index: 60;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#minimap {
+    width: 200px;
+    height: 200px;
+    background: rgba(20, 28, 40, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+#minimap-legend {
+    background: rgba(20, 28, 40, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+    padding: 4px 6px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    line-height: 1.3;
+}
+
+#minimap-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#minimap-legend i {
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+#hotbar {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 4px;
+    pointer-events: none;
+    z-index: 50;
+}
+
+#hotbar .slot {
+    width: 56px;
+    height: 56px;
+    background: rgba(20, 28, 40, 0.65);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 4px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+#hotbar .slot.filled {
+    border-color: rgba(255, 225, 86, 0.7);
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.4),
+        0 2px 8px rgba(255, 225, 86, 0.25);
+}
+
+#hotbar .slot.selected {
+    border-color: #ffffff;
+    transform: translateY(-4px) scale(1.06);
+    box-shadow:
+        0 0 0 2px #ffffff,
+        0 6px 14px rgba(255, 255, 255, 0.35);
+    transition:
+        transform 0.1s ease,
+        box-shadow 0.1s ease;
+}
+
+#hotbar .slot .num {
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    font-size: 11px;
+    color: #ffe156;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    text-shadow: 1px 1px 0 #000;
+}
+
+#hotbar .slot svg {
+    width: 36px;
+    height: 36px;
+    filter: drop-shadow(0 2px 0 #b33a1a);
+}
+
+#hotbar .slot.culture svg {
+    filter: drop-shadow(0 2px 0 #1a4d2e);
+}
+
+#inspect-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(3px);
+    z-index: 600;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+#inspect-modal.visible {
+    display: flex;
+}
+
+#inspect-modal img {
+    max-width: min(80vw, 900px);
+    max-height: 75vh;
+    border: 4px solid #2a323a;
+    border-radius: 4px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);
+    background: #1a2230;
+}
+
+#inspect-modal .inspect-hint {
+    margin-top: 18px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+#petri-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(2px);
+    z-index: 500;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+#petri-modal.visible {
+    display: flex;
+}
+
+#petri-modal .petri-stage {
+    cursor: pointer;
+    filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.55));
+    transform: translateY(0);
+    transition: transform 0.18s ease;
+}
+
+#petri-modal .petri-stage:hover {
+    transform: translateY(-4px) scale(1.02);
+}
+
+#petri-modal .petri-stage.culturing {
+    animation: petri-pulse 0.6s ease-out;
+}
+
+@keyframes petri-pulse {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+}
+
+#petri-modal .petri-hint {
+    margin-top: 28px;
+    color: #ffe156;
+    font-family: "Bangers", "Impact", "Arial Black", sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-shadow:
+        -2px -2px 0 #0d0d0d,
+        2px -2px 0 #0d0d0d,
+        -2px 2px 0 #0d0d0d,
+        2px 2px 0 #0d0d0d,
+        0 4px 0 #b33a1a;
+    pointer-events: none;
+}
+
+/* ── pause menu ──────────────────────────────────────────────────────── */
+#pause-menu {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 1000;
+    pointer-events: none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #eaf4fb;
+}
+
+#pause-menu.visible {
+    display: block;
+    pointer-events: auto;
+}
+
+#pause-menu .pause-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 7, 9, 0.78);
+    backdrop-filter: blur(4px);
+    animation: pause-fade 0.18s ease-out;
+}
+
+#pause-menu .pause-card {
+    position: relative;
+    margin: 4vh auto;
+    max-width: min(720px, 92vw);
+    max-height: 92vh;
+    overflow-y: auto;
+    background: linear-gradient(180deg, rgba(28,38,54,0.96), rgba(18,26,38,0.97));
+    border: 2px solid rgba(255, 225, 86, 0.35);
+    border-radius: 14px;
+    padding: 28px 28px 22px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+    animation: pause-rise 0.22s ease-out;
+}
+
+@keyframes pause-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes pause-rise {
+    from { transform: translateY(12px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+}
+
+#pause-menu .pause-title {
+    font-family: "Bangers", "Impact", "Arial Black", sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    text-align: center;
+    color: #ffe156;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    text-shadow:
+        -2px -2px 0 #0d0d0d,
+        2px -2px 0 #0d0d0d,
+        -2px 2px 0 #0d0d0d,
+        2px 2px 0 #0d0d0d,
+        0 5px 0 #b33a1a,
+        0 8px 16px rgba(0, 0, 0, 0.55);
+}
+
+#pause-menu .pause-subtitle {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(234, 244, 251, 0.55);
+}
+
+#pause-menu .pause-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 22px auto 18px;
+    max-width: 440px;
+}
+
+#pause-menu .pause-btn {
+    appearance: none;
+    cursor: pointer;
+    width: 100%;
+    background: rgba(20, 28, 40, 0.85);
+    border: 2px solid rgba(255, 255, 255, 0.18);
+    color: #eaf4fb;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.1s ease;
+}
+
+#pause-menu .pause-btn:hover {
+    background: rgba(40, 56, 80, 0.95);
+    border-color: rgba(255, 225, 86, 0.7);
+    color: #ffe156;
+}
+#pause-menu .pause-btn:active {
+    transform: translateY(1px);
+}
+
+#pause-menu .pause-btn.primary {
+    border-color: rgba(255, 225, 86, 0.55);
+    background: rgba(60, 50, 16, 0.7);
+    color: #ffe156;
+}
+#pause-menu .pause-btn.primary:hover {
+    background: rgba(90, 70, 20, 0.85);
+}
+
+#pause-menu .pause-btn.danger:hover {
+    border-color: rgba(255, 90, 70, 0.85);
+    color: #ff8a72;
+}
+
+#pause-menu .pause-btn kbd {
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(234, 244, 251, 0.85);
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-family: inherit;
+}
+
+#pause-menu .pause-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 6px;
+}
+
+@media (max-width: 640px) {
+    #pause-menu .pause-grid { grid-template-columns: 1fr; }
+}
+
+#pause-menu .pause-section {
+    background: rgba(10, 16, 24, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 14px 16px;
+}
+
+#pause-menu .pause-section h4 {
+    margin: 0 0 10px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #ffe156;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255, 225, 86, 0.18);
+    padding-bottom: 6px;
+}
+
+#pause-menu .pause-keys {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#pause-menu .key-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 12px;
+}
+
+#pause-menu .key-row .keys {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+#pause-menu .key-row .desc {
+    color: rgba(234, 244, 251, 0.78);
+    text-align: right;
+}
+
+#pause-menu kbd {
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    color: #eaf4fb;
+    min-width: 18px;
+    text-align: center;
+}
+
+#pause-menu .pause-sliders {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#pause-menu .pause-slider {
+    display: grid;
+    grid-template-columns: 88px 1fr 44px;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+}
+
+#pause-menu .pause-slider .slider-label {
+    color: rgba(234, 244, 251, 0.78);
+}
+
+#pause-menu .pause-slider .readout {
+    text-align: right;
+    color: #ffe156;
+    font-variant-numeric: tabular-nums;
+}
+
+#pause-menu .pause-slider input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    outline: none;
+}
+
+#pause-menu .pause-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ffe156;
+    border: 2px solid #0d0d0d;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+#pause-menu .pause-slider input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ffe156;
+    border: 2px solid #0d0d0d;
+    cursor: pointer;
+}
+
+#pause-menu .pause-empty {
+    color: rgba(234, 244, 251, 0.45);
+    font-style: italic;
+    font-size: 12px;
+    text-align: center;
+    padding: 8px 0;
+}
+
+#pause-menu .pause-footer {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(234, 244, 251, 0.45);
+}
+
+/* ── field manual (book modal) ───────────────────────────────────────── */
+#manual {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 1100;
+    pointer-events: none;
+    color: #2a1c10;
+}
+
+#manual.visible {
+    display: block;
+    pointer-events: auto;
+}
+
+#manual .manual-backdrop {
+    position: absolute;
+    inset: 0;
+    /* Heavy blur + saturation drop on whatever's behind, plus a vignette
+     * gradient so the world reads as "out there in the dark" while the
+     * book is the only thing lit. */
+    background:
+        radial-gradient(
+            ellipse 70% 60% at center,
+            rgba(10, 14, 22, 0.78) 0%,
+            rgba(2, 4, 8, 0.97) 100%
+        );
+    backdrop-filter: blur(14px) saturate(0.55) brightness(0.7);
+    -webkit-backdrop-filter: blur(14px) saturate(0.55) brightness(0.7);
+    animation: pause-fade 0.25s ease-out;
+}
+
+#manual .manual-book {
+    position: relative;
+    margin: 4vh auto;
+    width: min(1080px, 94vw);
+    /* Lock to a fixed height so the book never resizes between spreads. */
+    height: 92vh;
+    display: flex;
+    flex-direction: column;
+    background: #f4ece0;
+    border-radius: 6px;
+    /* Layered shadows simulate a stack of pages bound underneath the
+     * top spread — each pair is a slightly offset cream sliver
+     * (peeking page) followed by a subtle dark line (page edge). */
+    box-shadow:
+        /* page layers visible at the bottom + sides of the book */
+        0  3px 0 -1px #ede2c6,
+        0  4px 0 -1px rgba(0, 0, 0, 0.12),
+        0  6px 0 -3px #e3d6b3,
+        0  7px 0 -3px rgba(0, 0, 0, 0.10),
+        0  9px 0 -5px #d5c79e,
+        0 10px 0 -5px rgba(0, 0, 0, 0.08),
+        0 12px 0 -7px #c8b988,
+        /* main drop shadow under the whole stack */
+        0 28px 50px rgba(0, 0, 0, 0.7),
+        /* hairline rim around the top page */
+        inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+    transform-origin: center 40%;
+}
+
+/* Pages-edge texture along the bottom of each visible page — tiny
+ * horizontal stripes that read as the cut edge of a paper stack. */
+#manual .manual-page::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 5px;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(120, 95, 50, 0.18) 0,
+            rgba(120, 95, 50, 0.18) 1px,
+            transparent 1px,
+            transparent 3px
+        );
+    opacity: 0.6;
+}
+#manual .manual-page { position: relative; }
+
+/* book-open animation only fires when the modal becomes visible, so
+ * closing+reopening replays it from scratch. */
+#manual.visible .manual-book {
+    animation: book-open 0.7s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+/* When the modal is closing, override book-open with a mirror animation
+ * so the user sees the book actually shut and recede into the dark
+ * blurred world rather than blink out of existence. */
+#manual.visible.closing .manual-book {
+    animation: book-close 0.72s cubic-bezier(0.55, 0, 0.7, 1) forwards;
+}
+
+@keyframes book-close {
+    0%   {
+        opacity: 1;
+        transform: perspective(1800px)
+            translateY(0) rotateX(0) rotateY(0) scale(1);
+    }
+    20%  {
+        opacity: 1;
+        transform: perspective(1800px)
+            translateY(-2px) rotateX(0) rotateY(-4deg) scale(1.015);
+    }
+    100% {
+        opacity: 0;
+        transform: perspective(1800px)
+            translateY(28px) rotateX(35deg) rotateY(-65deg) scale(0.55);
+    }
+}
+
+/* While closing, the static pages fold to 88° and stay there (so the
+ * book reads as fully shut while it scales away). */
+@keyframes page-fold-left  { from { transform: rotateY(0); } to { transform: rotateY(88deg); } }
+@keyframes page-fold-right { from { transform: rotateY(0); } to { transform: rotateY(-88deg); } }
+
+#manual.closing .manual-spread .manual-page[data-side="left"] {
+    animation: page-fold-left 0.36s cubic-bezier(0.5, 0, 0.85, 0.4) forwards;
+}
+#manual.closing .manual-spread .manual-page[data-side="right"] {
+    animation: page-fold-right 0.36s cubic-bezier(0.5, 0, 0.85, 0.4) forwards;
+}
+
+/* Closing-glove keyframes — slide in from the sides, "press" the book
+ * shut, then retreat as the book itself recedes. Total 720ms to match
+ * book-close. */
+@keyframes hand-close-left {
+    0%   { transform: translate(-260%, 0); opacity: 0; }
+    14%  { opacity: 1; }
+    34%  { transform: translate(0, -8%); opacity: 1; }
+    50%  { transform: translate(14%, -14%); opacity: 1; }
+    66%  { transform: translate(0, -8%); opacity: 0.85; }
+    100% { transform: translate(-260%, 0); opacity: 0; }
+}
+@keyframes hand-close-right {
+    0%   { transform: translate(260%, 0) scaleX(-1); opacity: 0; }
+    14%  { opacity: 1; }
+    34%  { transform: translate(0, -8%) scaleX(-1); opacity: 1; }
+    50%  { transform: translate(-14%, -14%) scaleX(-1); opacity: 1; }
+    66%  { transform: translate(0, -8%) scaleX(-1); opacity: 0.85; }
+    100% { transform: translate(260%, 0) scaleX(-1); opacity: 0; }
+}
+
+#manual.closing .manual-hand-left {
+    animation: hand-close-left 0.72s ease-in-out forwards;
+}
+#manual.closing .manual-hand-right {
+    animation: hand-close-right 0.72s ease-in-out forwards;
+}
+
+/* The opening animation: book tilts up off the desk, swings open along
+ * its spine, and settles into place. Combined translateY + rotateY gives
+ * a sense of being lifted and unfolded. */
+@keyframes book-open {
+    0% {
+        opacity: 0;
+        transform: perspective(1800px)
+            translateY(30px)
+            rotateX(35deg)
+            rotateY(-65deg)
+            scale(0.55);
+    }
+    35% {
+        opacity: 1;
+    }
+    70% {
+        transform: perspective(1800px)
+            translateY(0)
+            rotateX(2deg)
+            rotateY(-6deg)
+            scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: perspective(1800px)
+            translateY(0)
+            rotateX(0)
+            rotateY(0)
+            scale(1);
+    }
+}
+
+#manual .manual-close {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px dashed rgba(168, 36, 36, 0.5);
+    background: rgba(253, 251, 239, 0.7);
+    color: #a82424;
+    font-family: "Caveat", cursive;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 7;
+    transition:
+        background 0.15s ease,
+        border-style 0.15s ease,
+        transform 0.15s ease;
+}
+#manual .manual-close:hover {
+    background: rgba(255, 225, 100, 0.6);
+    border-style: solid;
+    transform: rotate(8deg);
+}
+
+#manual .manual-spread {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0;
+    overflow: hidden;
+    position: relative;
+    perspective: 2000px;
+}
+
+/* close-and-reopen flip ─ both pages fold to edge-on while two gloved
+ * hands sweep in to "press" the book shut. Content swaps when the pages
+ * are at 90° (text invisible), then they unfold to reveal the new
+ * spread. Total 720ms, JS swaps content at the midpoint. */
+
+/* Page transform-origin set at all times so the rotation pivot is at
+ * the spine; default static state is rotateY(0). */
+#manual .manual-page[data-side="left"] {
+    transform-origin: right center;
+    backface-visibility: hidden;
+}
+#manual .manual-page[data-side="right"] {
+    transform-origin: left center;
+    backface-visibility: hidden;
+}
+
+/* During the flip, a single keyframe animation owns each page so the
+ * close + open phases live in one rule. Per-keyframe easing gives the
+ * close phase a heavier "ease-in" feel and the open phase a relieved
+ * "ease-out" feel. */
+@keyframes page-flip-left {
+    0%   { transform: rotateY(0deg);      animation-timing-function: cubic-bezier(0.5, 0, 0.85, 0.4); }
+    50%  { transform: rotateY(88deg);     animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }
+    100% { transform: rotateY(0deg); }
+}
+@keyframes page-flip-right {
+    0%   { transform: rotateY(0deg);      animation-timing-function: cubic-bezier(0.5, 0, 0.85, 0.4); }
+    50%  { transform: rotateY(-88deg);    animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }
+    100% { transform: rotateY(0deg); }
+}
+
+#manual .manual-spread.flipping .manual-page[data-side="left"] {
+    animation: page-flip-left 0.72s forwards;
+}
+#manual .manual-spread.flipping .manual-page[data-side="right"] {
+    animation: page-flip-right 0.72s forwards;
+}
+
+/* a thin "spine shadow" that pulses brighter while the book is closed,
+ * giving a hint of a closed cover behind the folded pages. */
+#manual .manual-spread.flipping .manual-spine {
+    animation: spine-flash 0.72s ease-in-out;
+}
+@keyframes spine-flash {
+    0%, 100% { background: linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.05)); }
+    50%      { background: linear-gradient(180deg, rgba(0,0,0,0.4), rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.4)); }
+}
+
+/* gloved hands ─ slide in from outside the spread, hover near the
+ * spine while the book is closed, then retreat. */
+#manual .manual-hand {
+    position: absolute;
+    bottom: -8%;
+    width: 22%;
+    max-width: 180px;
+    aspect-ratio: 200 / 280;
+    z-index: 9;
+    pointer-events: none;
+    will-change: transform;
+}
+#manual .manual-hand svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+}
+
+/* Hands slide in parallel from the sides — same vertical orientation
+ * throughout. They translate horizontally only (no rotation), with a
+ * small Y-bump at the press peak to suggest a downward "press" motion. */
+@keyframes hand-flip-left {
+    0%   { transform: translate(-260%, 0); opacity: 0; }
+    18%  { opacity: 1; }
+    35%  { transform: translate(0, -6%); opacity: 1; }
+    50%  { transform: translate(14%, -14%); opacity: 1; }
+    65%  { transform: translate(0, -6%); opacity: 1; }
+    82%  { opacity: 1; }
+    100% { transform: translate(-260%, 0); opacity: 0; }
+}
+@keyframes hand-flip-right {
+    /* scaleX(-1) mirrors the hand so the thumb faces the spine, but
+     * since scaleX is the rightmost (innermost) operation it doesn't
+     * flip the translate values in screen space. */
+    0%   { transform: translate(260%, 0) scaleX(-1); opacity: 0; }
+    18%  { opacity: 1; }
+    35%  { transform: translate(0, -6%) scaleX(-1); opacity: 1; }
+    50%  { transform: translate(-14%, -14%) scaleX(-1); opacity: 1; }
+    65%  { transform: translate(0, -6%) scaleX(-1); opacity: 1; }
+    82%  { opacity: 1; }
+    100% { transform: translate(260%, 0) scaleX(-1); opacity: 0; }
+}
+
+/* default static positions: each hand sits in its own half of the
+ * spread, with its inner edge against the spine. */
+#manual .manual-hand-left {
+    right: 50%;
+    animation: hand-flip-left 0.72s ease-in-out forwards;
+}
+#manual .manual-hand-right {
+    left: 50%;
+    /* mirrored via scaleX(-1) inside the keyframe so the thumb faces
+     * the correct way (toward the spine) on both hands. */
+    animation: hand-flip-right 0.72s ease-in-out forwards;
+}
+
+#manual .manual-page {
+    /* generous bottom padding so the corner nav buttons never sit on top
+     * of body text, plus a touch more horizontal margin so dense pages
+     * don't run edge-to-edge. */
+    padding: 36px 56px 86px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(168, 36, 36, 0.4) transparent;
+    font-family: "Kalam", "Patrick Hand", "Bradley Hand", "Comic Sans MS", cursive;
+    font-weight: 400;
+    font-size: 15.5px;
+    line-height: 26px;
+    color: #1a3a6b; /* ballpoint blue ink */
+    /* notebook paper: warm cream + faint blue ruled lines on a 28px grid */
+    background:
+        repeating-linear-gradient(
+            transparent 0,
+            transparent 25px,
+            rgba(46, 90, 165, 0.16) 25px,
+            rgba(46, 90, 165, 0.16) 26px
+        ),
+        radial-gradient(ellipse at top left, rgba(0, 0, 0, 0.05), transparent 60%),
+        #fdfbef;
+}
+
+#manual .manual-page[data-side="left"] {
+    box-shadow: inset -10px 0 18px -12px rgba(0, 0, 0, 0.25);
+    /* red margin line on the inside-spine side */
+    border-right: 1px solid rgba(168, 36, 36, 0.0);
+}
+#manual .manual-page[data-side="right"] {
+    box-shadow: inset 10px 0 18px -12px rgba(0, 0, 0, 0.25);
+    /* a faded red margin line down the left edge, like notebook paper */
+    background:
+        linear-gradient(to right,
+            transparent 36px,
+            rgba(168, 36, 36, 0.45) 36px,
+            rgba(168, 36, 36, 0.45) 37px,
+            transparent 37px),
+        repeating-linear-gradient(
+            transparent 0,
+            transparent 25px,
+            rgba(46, 90, 165, 0.16) 25px,
+            rgba(46, 90, 165, 0.16) 26px
+        ),
+        radial-gradient(ellipse at top left, rgba(0, 0, 0, 0.05), transparent 60%),
+        #fdfbef;
+}
+#manual .manual-page[data-side="left"] {
+    background:
+        linear-gradient(to left,
+            transparent 36px,
+            rgba(168, 36, 36, 0.45) 36px,
+            rgba(168, 36, 36, 0.45) 37px,
+            transparent 37px),
+        repeating-linear-gradient(
+            transparent 0,
+            transparent 25px,
+            rgba(46, 90, 165, 0.16) 25px,
+            rgba(46, 90, 165, 0.16) 26px
+        ),
+        radial-gradient(ellipse at top right, rgba(0, 0, 0, 0.05), transparent 60%),
+        #fdfbef;
+}
+
+#manual .manual-spine {
+    width: 2px;
+    background: linear-gradient(180deg,
+        rgba(0, 0, 0, 0.05),
+        rgba(0, 0, 0, 0.25) 50%,
+        rgba(0, 0, 0, 0.05));
+}
+
+/* corner navigation — small circles that sit on the page like little
+ * doodled bookmarks rather than a separate toolbar. */
+#manual .manual-nav {
+    appearance: none;
+    cursor: pointer;
+    position: absolute;
+    bottom: 14px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px dashed rgba(26, 58, 107, 0.45);
+    background: rgba(253, 251, 239, 0.6);
+    color: #1a3a6b;
+    font-family: "Caveat", "Kalam", cursive;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    z-index: 6;
+    pointer-events: auto;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#manual .manual-nav-prev { left: 18px; }
+#manual .manual-nav-next { right: 18px; }
+#manual .manual-nav:hover:not(:disabled) {
+    background: rgba(255, 235, 130, 0.7);
+    border-color: #a82424;
+    border-style: solid;
+    color: #a82424;
+    transform: rotate(-3deg) scale(1.05);
+}
+#manual .manual-nav:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+/* page number — handwritten, tucked at the bottom centre between the
+ * two corner buttons. */
+#manual .manual-pagenum {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-1deg);
+    font-family: "Caveat", "Kalam", cursive;
+    font-size: 17px;
+    color: rgba(26, 58, 107, 0.55);
+    pointer-events: none;
+    z-index: 6;
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 720px) {
+    #manual .manual-spread {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr;
+    }
+    #manual .manual-spine { display: none; }
+    #manual .manual-page[data-side="right"] {
+        border-top: 1px dashed rgba(0, 0, 0, 0.18);
+    }
+    #manual .manual-page { padding: 24px 22px; }
+}
+
+/* ── manual page content ──────────────────────────────────────────── */
+
+#manual h1, #manual h2, #manual h3 {
+    font-family: "Caveat", "Kalam", cursive;
+    color: #1a3a6b;
+    margin: 0;
+}
+
+#manual h2 {
+    /* big sloppy headline — red ink, like the chapter title was scribbled
+     * larger to mark the section. */
+    font-family: "Caveat", "Kalam", cursive;
+    font-size: 40px;
+    line-height: 1.0;
+    margin: 4px 0 18px;
+    font-weight: 700;
+    color: #a82424;
+    transform: rotate(-1.5deg);
+    transform-origin: left center;
+    display: inline-block;
+}
+
+#manual h3.chapter-num {
+    font-family: "Caveat", cursive;
+    font-size: 22px;
+    color: #d97706; /* orange ink */
+    margin-bottom: 4px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: none;
+    transform: rotate(-0.8deg);
+    display: inline-block;
+}
+#manual h3.section-eyebrow {
+    font-family: "Caveat", cursive;
+    font-size: 18px;
+    color: #6b6053; /* pencil grey */
+    margin-bottom: 4px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: none;
+    font-style: italic;
+}
+
+#manual p {
+    margin: 0 0 14px;
+    /* not fully justified — looks nicer with handwriting */
+    text-align: left;
+}
+
+#manual p:last-child { margin-bottom: 0; }
+
+#manual em {
+    /* green ink for emphasis */
+    color: #2a6e3f;
+    font-style: italic;
+    font-weight: 700;
+}
+#manual strong {
+    /* black ink + a faint yellow highlighter swipe behind important
+     * words — looks like someone went over them later. */
+    color: #1a1208;
+    background: linear-gradient(
+        180deg,
+        transparent 55%,
+        rgba(255, 215, 80, 0.55) 55%,
+        rgba(255, 215, 80, 0.55) 92%,
+        transparent 92%
+    );
+    padding: 0 1px;
+    font-weight: 700;
+}
+
+#manual .dropcap {
+    float: left;
+    font-family: "Caveat", "Bangers", cursive;
+    font-size: 64px;
+    line-height: 0.8;
+    padding: 6px 10px 0 0;
+    color: #a82424;
+    transform: rotate(-3deg);
+    display: inline-block;
+}
+
+#manual ul,
+#manual ol {
+    margin: 0 0 12px 22px;
+    padding: 0;
+}
+
+#manual ul li,
+#manual ol li {
+    margin: 4px 0;
+    line-height: 1.5;
+}
+
+#manual ol.protocol li,
+#manual ol.toc li {
+    margin: 6px 0;
+}
+
+#manual .callout {
+    /* yellow-highlighter sticky note vibe; tilted slightly */
+    margin: 16px 0;
+    padding: 12px 16px;
+    background: rgba(255, 225, 100, 0.4);
+    border: 1.5px dashed rgba(168, 36, 36, 0.45);
+    border-radius: 5px;
+    font-size: 16px;
+    line-height: 26px;
+    transform: rotate(-0.6deg);
+    box-shadow: 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+#manual .callout strong {
+    display: block;
+    margin-bottom: 6px;
+    font-family: "Caveat", cursive;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+    text-transform: none;
+    color: #a82424;
+    background: none;
+    padding: 0;
+    transform: rotate(-1deg);
+}
+
+#manual .callout-attrib {
+    display: block;
+    margin-top: 10px;
+    text-align: right;
+    font-family: "Caveat", cursive;
+    font-size: 18px;
+    color: rgba(42, 28, 16, 0.7);
+    font-style: italic;
+}
+
+#manual .page-profile .profile-sub {
+    margin: -8px 0 16px;
+    font-style: italic;
+    color: rgba(42, 28, 16, 0.65);
+    font-size: 14px;
+    text-align: left;
+}
+
+#manual .page-profile .profile-tie {
+    margin-top: 14px;
+    font-style: italic;
+    color: rgba(42, 28, 16, 0.78);
+    border-top: 1px solid rgba(42, 28, 16, 0.2);
+    padding-top: 10px;
+}
+
+#manual .callout ol,
+#manual .callout ul {
+    margin-bottom: 0;
+}
+
+#manual .ingame {
+    /* green-highlighter aside; tilted the other way for variety */
+    margin: 16px 0 0;
+    padding: 11px 14px;
+    background: rgba(126, 217, 87, 0.35);
+    border: 1.5px dashed rgba(40, 100, 30, 0.5);
+    border-radius: 5px;
+    font-family: "Kalam", cursive;
+    font-size: 15px;
+    line-height: 25px;
+    transform: rotate(0.5deg);
+    box-shadow: 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+#manual .ingame strong {
+    color: #2a6e3f;
+    background: none;
+    padding: 0;
+    font-weight: 700;
+}
+
+#manual .ingame kbd {
+    display: inline-block;
+    background: #fff;
+    border: 1.5px solid rgba(40, 100, 30, 0.6);
+    border-bottom-width: 2.5px;
+    border-radius: 4px;
+    padding: 0 6px;
+    font-family: "Kalam", cursive;
+    font-size: 14px;
+    color: #2a6e3f;
+    font-weight: 700;
+    margin: 0 2px;
+    transform: rotate(-2deg);
+}
+
+#manual .toc {
+    list-style: none;
+    margin: 18px 0 14px;
+    padding: 0;
+    counter-reset: toc;
+}
+
+#manual .toc li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px dotted rgba(26, 58, 107, 0.35);
+    padding: 6px 0;
+    font-size: 18px;
+    font-family: "Kalam", cursive;
+    line-height: 1.2;
+}
+
+#manual .toc a {
+    color: #1a3a6b;
+    text-decoration: none;
+    cursor: pointer;
+    flex: 1;
+    transition:
+        color 0.15s ease,
+        transform 0.15s ease;
+    display: inline-block;
+}
+#manual .toc a:hover {
+    color: #a82424;
+    transform: translateX(3px) rotate(-1deg);
+}
+
+#manual .toc-num {
+    margin-left: 12px;
+    font-family: "Caveat", cursive;
+    font-size: 22px;
+    color: #a82424;
+    font-weight: 700;
+}
+
+#manual .toc-hint {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 16px;
+    font-family: "Caveat", cursive;
+    color: rgba(26, 58, 107, 0.55);
+    font-style: italic;
+    transform: rotate(-1deg);
+}
+
+#manual .glossary {
+    margin: 0;
+    font-size: 16px;
+    font-family: "Kalam", cursive;
+}
+
+#manual .glossary dt {
+    font-family: "Caveat", cursive;
+    font-weight: 700;
+    font-size: 22px;
+    color: #a82424;
+    margin-top: 10px;
+}
+#manual .glossary dt:first-child { margin-top: 0; }
+
+#manual .glossary dd {
+    margin: 0 0 6px 14px;
+    line-height: 24px;
+    color: #1a3a6b;
+}
+
+#manual .rules {
+    list-style: none;
+    margin: 0 0 12px;
+    padding: 0;
+}
+#manual .rules li {
+    padding: 4px 0 4px 18px;
+    position: relative;
+}
+#manual .rules li::before {
+    content: "›";
+    position: absolute;
+    left: 0;
+    color: #b33a1a;
+    font-weight: 700;
+}
+
+/* page art */
+#manual .art-row {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0;
+}
+
+#manual .art-row-right {
+    float: right;
+    max-width: 45%;
+    margin: 0 0 8px 14px;
+}
+
+#manual .art-section {
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+}
+
+#manual .art-row-svg {
+    width: 100%;
+    max-width: 320px;
+}
+
+#manual .art-bacteria {
+    width: 100%;
+    max-width: 240px;
+}
+
+#manual .art-petri {
+    width: 140px;
+    height: 140px;
+}
+
+#manual .art-tube {
+    width: 60px;
+    height: 140px;
+}
+
+/* cover & back */
+#manual .page-cover {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background:
+        radial-gradient(ellipse at center, rgba(255, 225, 86, 0.15), transparent 70%),
+        #f4ece0;
+    padding: 40px 30px;
+}
+
+#manual .cover-art {
+    margin-bottom: 24px;
+    width: 80%;
+    max-width: 240px;
+}
+
+#manual .cover-title {
+    font-family: "Caveat", cursive;
+    font-size: 78px;
+    line-height: 0.95;
+    color: #a82424;
+    letter-spacing: 0;
+    margin-bottom: 18px;
+    transform: rotate(-2deg);
+    text-shadow: 2px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+#manual .cover-sub {
+    font-family: "Kalam", cursive;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.3;
+    color: #1a3a6b;
+    margin-bottom: 24px;
+    transform: rotate(-1deg);
+}
+
+#manual .cover-edition {
+    margin-top: 18px;
+    font-family: "Caveat", cursive;
+    font-size: 18px;
+    color: rgba(26, 58, 107, 0.65);
+    transform: rotate(-1.5deg);
+}
+
+#manual .page-back .back-quote {
+    font-family: "Caveat", cursive;
+    font-style: italic;
+    font-size: 26px;
+    line-height: 1.3;
+    color: #1a3a6b;
+    max-width: 24ch;
+    margin-bottom: 28px;
+    transform: rotate(-1deg);
+}
+
+#manual .page-back .back-credit {
+    margin-top: 18px;
+    font-family: "Caveat", cursive;
+    font-size: 18px;
+    color: rgba(26, 58, 107, 0.7);
+    line-height: 1.3;
+}
+
+#manual .page-back .back-foot {
+    margin-top: 26px;
+    font-family: "Caveat", cursive;
+    font-style: italic;
+    font-size: 22px;
+    color: #a82424;
+    transform: rotate(-2deg);
+}

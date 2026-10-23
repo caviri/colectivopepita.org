@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Antarctic Sampler — Lab</title>
+        <link rel="stylesheet" href="./style.css" />
+        <script type="importmap">
+            {
+                "imports": {
+                    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="vignette"></div>
+        <canvas id="game"></canvas>
+        <div id="loader" class="visible">
+            <h1>The Lab</h1>
+            <p>Lighting the candles…</p>
+        </div>
+
+        <div id="hud">
+            <div id="hud-top">
+                <span id="samples">Samples: 0</span>
+                <span id="zone">Zone: lab</span>
+            </div>
+            <div id="hud-bottom">
+                <div id="prompt"></div>
+                <div id="hint">WASD move · E culture · Q throw · click the door to leave · <kbd>Esc</kbd> menu</div>
+            </div>
+        </div>
+
+        <button id="new-game" type="button">New Game</button>
+
+        <aside id="todo-list">
+            <h3>Mission</h3>
+            <ul></ul>
+        </aside>
+
+        <div id="inspect-modal">
+            <img id="inspect-image" alt="" />
+            <div class="inspect-hint">Click outside to close</div>
+        </div>
+
+        <div id="petri-modal">
+            <div class="petri-stage">
+                <svg id="petri-svg" viewBox="0 0 200 200" width="340" height="340">
+                    <defs>
+                        <radialGradient id="petriShine" cx="35%" cy="32%" r="65%">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+                            <stop offset="55%" stop-color="#ffffff" stop-opacity="0.05"/>
+                            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+                    <circle cx="100" cy="100" r="92" fill="#dde6ee" stroke="#1a2230" stroke-width="3"/>
+                    <circle cx="100" cy="100" r="92" fill="url(#petriShine)"/>
+                    <g id="petri-culture" style="display:none">
+                        <ellipse cx="100" cy="100" rx="42" ry="30" fill="#7ed957" stroke="#0d0d0d" stroke-width="2"/>
+                        <circle cx="86" cy="92" r="3" fill="#0d0d0d"/>
+                        <circle cx="108" cy="106" r="2.5" fill="#0d0d0d"/>
+                        <circle cx="116" cy="90" r="2" fill="#0d0d0d"/>
+                        <circle cx="92" cy="108" r="2.5" fill="#0d0d0d"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="petri-hint" id="petri-hint">Click the dish to culture a sample!</div>
+        </div>
+
+        <div id="hotbar">
+            <div class="slot"><span class="num">1</span></div>
+            <div class="slot"><span class="num">2</span></div>
+            <div class="slot"><span class="num">3</span></div>
+            <div class="slot"><span class="num">4</span></div>
+            <div class="slot"><span class="num">5</span></div>
+            <div class="slot"><span class="num">6</span></div>
+            <div class="slot"><span class="num">7</span></div>
+            <div class="slot"><span class="num">8</span></div>
+            <div class="slot"><span class="num">9</span></div>
+            <div class="slot"><span class="num">0</span></div>
+        </div>
+
+        <script type="module" src="./lab.js"></script>
+    </body>
+</html>
