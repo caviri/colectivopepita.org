@@ -81,6 +81,40 @@ just stage    # build the Space folder into build/space without uploading
 Commits follow [Conventional Commits](https://www.conventionalcommits.org/).
 See [`docs/scene-authoring.md`](docs/scene-authoring.md) for how scenes are structured.
 
+## Working with Claude Code (or any coding agent)
+
+The repo is set up so an agent is useful from the first prompt.
+
+- `AGENTS.md` is the agent onboarding: layout, commands, conventions and the gotchas.
+  `CLAUDE.md` just imports it, so Claude Code, Codex and Gemini CLI all read the same file.
+- `.claude/settings.json` is shared config:
+  - Commit and PR attribution is **off**: no `Co-Authored-By` trailer, no "Generated with" footer.
+  - Safe read/check commands (`just check`, `just test`, `git diff`, …) run without prompting.
+  - `git push`, `just deploy` and `gh workflow run` always ask first.
+  - Reading `.env` and destructive bucket commands are denied.
+  - Personal tweaks go in `.claude/settings.local.json` (gitignored).
+
+A first session, end to end:
+
+```bash
+git clone https://github.com/caviri/colectivopepita.org && cd colectivopepita.org
+cp .env.example .env          # add your HF_TOKEN
+just assets                   # fetch the runtime assets (~300 MB)
+just dev                      # leave this running, open http://localhost:7860
+claude                        # in a second terminal
+```
+
+Then try prompts like:
+
+1. *"Explain how `src/assets.js` turns an asset name into a `/data/...` URL."* Read-only, good for orientation.
+2. *"Add a cargo-container prop to the outdoor scene following `docs/scene-authoring.md`."*
+   The agent edits `src/`, and you refresh the browser tab to check it.
+3. *"Run the checks and commit this."* The agent runs `just check` and `just test`, then makes a
+   Conventional Commit authored by you alone.
+
+Rules of thumb: ask for one change at a time, look at the result in the browser, and let the
+agent commit but push yourself. Pushing to `main` redeploys the live site.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

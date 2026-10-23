@@ -19,3 +19,7 @@ __pycache__/
 Thumbs.db
 .vscode/
 .idea/
+
+# Claude Code personal settings
+.claude/settings.local.json
+.claude/scheduled_tasks.lock

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "includeCoAuthoredBy": false,
+  "permissions": {
+    "allow": [
+      "Bash(just check)",
+      "Bash(just test)",
+      "Bash(just stage)",
+      "Bash(just --list)",
+      "Bash(ruff check *)",
+      "Bash(pytest *)",
+      "Bash(node --check *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)"
+    ],
+    "ask": [
+      "Bash(just deploy)",
+      "Bash(git push *)",
+      "Bash(gh workflow run *)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.local)",
+      "Bash(python scripts/deploy_space.py)",
+      "Bash(hf buckets rm *)",
+      "Bash(hf buckets delete *)",
+      "Bash(git push --force *)"
+    ]
+  }
+}
