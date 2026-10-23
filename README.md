@@ -60,6 +60,8 @@ Without it the server refuses all logins (fails closed).
 
 ## Working with assets
 
+Bucket details (auth, download/upload, mounting on Windows, macOS and Linux): [`docs/bucket.md`](docs/bucket.md).
+
 Models go through `tools/preprocess` (needs Node 22, `cd tools/preprocess && npm ci`):
 
 ```bash

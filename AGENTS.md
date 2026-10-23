@@ -77,5 +77,5 @@ Run `just check` and `just test` before you call a change done. For anything vis
 
 ## Where to read more
 
-`README.md` (setup and deploy walkthrough), `docs/scene-authoring.md` (scene format),
+`docs/bucket.md` (the asset bucket: auth, sync, mounting), `README.md` (setup and deploy walkthrough), `docs/scene-authoring.md` (scene format),
 `docs/3dmodelingguide.md` (asset requirements).

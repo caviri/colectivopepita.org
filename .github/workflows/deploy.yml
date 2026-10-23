@@ -4,6 +4,10 @@ name: Deploy to Hugging Face
 on:
   push:
     branches: [main]
+    # Docs-only changes do not need a Space rebuild.
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
   workflow_dispatch:
 
 concurrency:
