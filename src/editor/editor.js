@@ -365,7 +365,7 @@ btnSave.addEventListener("click", saveScene);
 btnPlay.addEventListener("click", async () => {
     if (!scene) return;
     if (dirty) await saveScene();
-    window.open(`/src/play.html?scene=${encodeURIComponent(scene.id)}`, "_blank");
+    window.open(`/src/demos/play/play.html?scene=${encodeURIComponent(scene.id)}`, "_blank");
 });
 
 const btnMatrix = document.getElementById("btn-matrix");

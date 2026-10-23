@@ -7,7 +7,7 @@ behind a password. The password is read at runtime from the APP_PASSWORD
 environment variable, which is set as a Hugging Face Space *secret*.
 
 Layout: ROOT (APP_ROOT, default /app) is the document root holding src/ and data/.
-landing.html lives next to this file.
+The login page is ../landing/index.html (override with LANDING_PATH).
 
 Flow:
   - GET /            -> landing page with a password form (or redirect to /src/ if already in)
@@ -41,7 +41,9 @@ PUBLIC_PATHS = {"/", "/index.html", "/login"}
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-with open(os.path.join(HERE, "landing.html"), "r", encoding="utf-8") as fh:
+LANDING_PATH = os.environ.get("LANDING_PATH", os.path.join(HERE, "..", "landing", "index.html"))
+
+with open(LANDING_PATH, "r", encoding="utf-8") as fh:
     LANDING_TEMPLATE = fh.read()
 
 

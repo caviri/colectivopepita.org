@@ -1,11 +1,11 @@
 import * as THREE from "three";
-import { getInventory, saveInventory, resetGame } from "./inventory.js";
-import { dataURL, loadOBJ, loadTexture, fitToFloor } from "./assets.js";
-import * as controls from "./controls.js";
-import { createMenu } from "./menu.js";
-import { createManual } from "./manual.js";
-import { mountTodoList } from "./todo.js";
-import { exportScene } from "./engine/core/export.js";
+import { getInventory, saveInventory, resetGame } from "../../inventory.js";
+import { dataURL, loadOBJ, loadTexture, fitToFloor } from "../../assets.js";
+import * as controls from "../../controls.js";
+import { createMenu } from "../../menu.js";
+import { createManual } from "../../manual.js";
+import { mountTodoList } from "../../todo.js";
+import { exportScene } from "../../engine/core/export.js";
 
 const canvas = document.getElementById("game");
 let renderer;

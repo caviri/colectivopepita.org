@@ -115,6 +115,14 @@ hf-mount stop ~/pepita-data
 
 Check the `hf-mount` README for current Windows status before relying on either; it is a young tool.
 
+### Dev container (Linux FUSE, works from Windows hosts)
+
+`.devcontainer/` installs `hf-mount` and runs `.devcontainer/mount-bucket.sh` on every start: it mounts the bucket
+read-only at `/data` and links `./data` to it. It needs `HF_TOKEN` in the **host** environment when VS Code starts
+(or `hf auth login` inside the container, which the script also reads), and the container runs with
+`--cap-add=SYS_ADMIN --device=/dev/fuse`. This is the Windows route that needs no WSL setup of your own, since Docker
+Desktop provides it. Tested with Docker 29 on Windows; the mount lists the bucket and rejects writes.
+
 ### Mounting into the Space (already done)
 
 The same idea is what production uses: Space settings, **Volumes**, bucket `katospiegel/colectivo-pepita` at

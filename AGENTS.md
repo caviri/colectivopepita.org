@@ -12,15 +12,20 @@ server (`server/server.py`) behind a password gate and deployed as a Hugging Fac
 ## Layout
 
 ```
-src/                 game entry pages and modules (index, lab, lab2, outdoor, play, menu, ...)
-src/engine/          engine: core/ (scene, export), runtime/, systems/, kg/, db.js
+landing/index.html   THE LANDING PAGE (login), served at "/" by server/server.py
+src/index.html       game hub, first page after login (/src/)
+src/demos/           the demos, one folder each: outdoor/ (main.js), lab/, lab2/, play/ (scene player)
 src/editor/          scene editor (editor.html, viewport.js, panels/)
-server/              server.py (gate + static) and landing.html (login page)
+src/engine/          engine: core/ (scene, export), runtime/, systems/, kg/, db.js
+src/*.js, style.css  modules shared by demos (assets, controls, inventory, menu, manual, todo, scene-controls)
+src/dev.html         developer index linking every demo
+server/              server.py (password gate + static server)
 tools/preprocess/    Node pipeline: OBJ -> Meshopt GLB, PNG -> WebP, asset-meta.json
 scripts/             deploy_space.py, sync_assets.py
 tests/               pytest suite for the gate
 docs/                scene-authoring.md, 3dmodelingguide.md
 Dockerfile           what Hugging Face builds (copies server/ and src/, symlinks /data)
+.devcontainer/      dev container; mounts the bucket at /data (needs HF_TOKEN on the host)
 .github/workflows/   ci.yml, deploy.yml (push to main -> Space)
 data/                runtime assets. GITIGNORED locally (`just assets`); in prod it is the HF bucket
                      mounted read-only at /data and symlinked to /app/data
@@ -57,6 +62,8 @@ Run `just check` and `just test` before you call a change done. For anything vis
 
 ## Things that will bite you
 
+- **Demo imports.** Demos live two levels below `src/`, so shared modules are `../../assets.js`, etc.
+  `tests/test_links.py` fails on any broken relative link or import.
 - **Absolute asset URLs.** The game fetches assets from `/data/...` (built by `dataURL()` in
   `src/assets.js`, which rewrites `.obj`->`.glb` and `.png`->`.webp` and serves from
   `/data/optimized/`). Don't introduce relative or CDN asset paths.

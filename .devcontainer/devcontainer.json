@@ -1,0 +1,28 @@
+{
+  "name": "Colectivo Pepita",
+  "build": { "dockerfile": "Dockerfile" },
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "runArgs": [
+    "--cap-add=SYS_ADMIN",
+    "--device=/dev/fuse",
+    "--security-opt=apparmor:unconfined"
+  ],
+  "containerEnv": {
+    "HF_TOKEN": "${localEnv:HF_TOKEN}",
+    "HF_BUCKET": "katospiegel/colectivo-pepita",
+    "HF_SPACE": "katospiegel/colectivo-pepita",
+    "APP_PASSWORD": "dev"
+  },
+  "forwardPorts": [7860],
+  "portsAttributes": { "7860": { "label": "Game (password: dev)" } },
+  "postCreateCommand": "pip install -e '.[dev]'",
+  "postStartCommand": "bash .devcontainer/mount-bucket.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": ["charliermarsh.ruff", "editorconfig.editorconfig", "ms-python.python"]
+    }
+  }
+}

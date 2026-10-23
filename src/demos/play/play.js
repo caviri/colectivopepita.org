@@ -2,10 +2,10 @@
 // data/scenes/<id>.json (or, in Phase 1+, from IndexedDB), boots the
 // engine, and runs the scene with the existing controls/player.
 
-import { fromJSON } from "./engine/core/serialize.js";
-import { loadPool } from "./engine/kg/pool.js";
-import { mount } from "./engine/runtime/play.js";
-import { openEngineDB } from "./engine/db.js";
+import { fromJSON } from "../../engine/core/serialize.js";
+import { loadPool } from "../../engine/kg/pool.js";
+import { mount } from "../../engine/runtime/play.js";
+import { openEngineDB } from "../../engine/db.js";
 
 const errorEl = document.getElementById("engine-error");
 function showError(msg) {

@@ -3,8 +3,8 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Antarctic Sampler — Day 1 demo</title>
-        <link rel="stylesheet" href="./style.css" />
+        <title>Antarctic Sampler — Container Lab</title>
+        <link rel="stylesheet" href="../../style.css" />
         <script type="importmap">
             {
                 "imports": {
@@ -18,20 +18,18 @@
         <div id="vignette"></div>
         <canvas id="game"></canvas>
         <div id="loader" class="visible">
-            <h1>Antarctic Sampler</h1>
-            <p id="loader-status">Loading the world…</p>
-            <div id="loader-bar"><div id="loader-bar-fill"></div></div>
-            <p id="loader-log"></p>
+            <h1>The Container</h1>
+            <p>Powering up…</p>
         </div>
 
         <div id="hud">
             <div id="hud-top">
                 <span id="samples">Samples: 0</span>
-                <span id="zone">Zone: snow</span>
+                <span id="zone">Zone: container lab</span>
             </div>
             <div id="hud-bottom">
                 <div id="prompt"></div>
-                <div id="hint">WASD move · Shift sprint · Space jump · E interact · Q throw · <kbd>Esc</kbd> menu</div>
+                <div id="hint">WASD move · click to leave · <kbd>Esc</kbd> menu</div>
             </div>
         </div>
 
@@ -41,17 +39,6 @@
             <h3>Mission</h3>
             <ul></ul>
         </aside>
-
-        <div id="minimap-wrap">
-            <canvas id="minimap" width="200" height="200"></canvas>
-            <div id="minimap-legend">
-                <span><i style="background:#ff7043"></i>You</span>
-                <span><i style="background:#b84a3a"></i>Lab</span>
-                <span><i style="background:#dde6ee"></i>Container</span>
-                <span><i style="background:#7ed957"></i>Scan</span>
-                <span><i style="background:#eec96a"></i>Truck</span>
-            </div>
-        </div>
 
         <div id="hotbar">
             <div class="slot"><span class="num">1</span></div>
@@ -66,6 +53,6 @@
             <div class="slot"><span class="num">0</span></div>
         </div>
 
-        <script type="module" src="./main.js"></script>
+        <script type="module" src="./lab2.js"></script>
     </body>
 </html>

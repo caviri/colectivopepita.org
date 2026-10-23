@@ -19,13 +19,13 @@ ROOT = Path(__file__).resolve().parent.parent
 STAGE = ROOT / "build" / "space"
 
 # Paths copied into the Space repo, relative to the repo root.
-CODE = ["Dockerfile", "index.html", "dev.html", "server", "src"]
+CODE = ["Dockerfile", "landing", "server", "src"]
 
 # Space-side prefixes this deploy owns. Anything under them that is not in the
 # staged tree is deleted, so removed source files disappear from the Space too.
 # data/ is deliberately absent (it is a bucket mount, not repo content). The legacy entries prune files left over from
 # the pre-clean-repo template deploy.
-OWNED = ["src/**", "server/**", "Dockerfile", "index.html", "dev.html"]
+OWNED = ["src/**", "server/**", "landing/**", "Dockerfile", "index.html", "dev.html"]
 LEGACY = [
     ".devcontainer/**", ".github/**", ".claude/**", "docs/**", "scripts/**", "tests/**",
     "landing.html", "server.py", "justfile", "AGENTS.md", "CLAUDE.md", "CHANGELOG.md",

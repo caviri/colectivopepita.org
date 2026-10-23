@@ -5,7 +5,7 @@ FROM python:3.12-slim
 
 WORKDIR /app
 COPY server/ /app/server/
-COPY index.html dev.html /app/
+COPY landing/ /app/landing/
 COPY src/ /app/src/
 # The Space mounts the HF bucket read-only at /data (Space settings > Volumes);
 # the game requests assets via absolute /data/... URLs, so expose it under the doc root.

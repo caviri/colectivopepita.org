@@ -1,13 +1,13 @@
 import * as THREE from "three";
 import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { getInventory, saveInventory, resetGame } from "./inventory.js";
-import { dataURL, loadOBJ, loadTexture, fitToFloor, centerScale, onLoadProgress, getLoadStats } from "./assets.js";
-import * as controls from "./controls.js";
-import { createMenu } from "./menu.js";
-import { createManual } from "./manual.js";
-import { mountTodoList } from "./todo.js";
-import { exportScene } from "./engine/core/export.js";
+import { getInventory, saveInventory, resetGame } from "../../inventory.js";
+import { dataURL, loadOBJ, loadTexture, fitToFloor, centerScale, onLoadProgress, getLoadStats } from "../../assets.js";
+import * as controls from "../../controls.js";
+import { createMenu } from "../../menu.js";
+import { createManual } from "../../manual.js";
+import { mountTodoList } from "../../todo.js";
+import { exportScene } from "../../engine/core/export.js";
 
 const WORLD_RADIUS = 50;
 const FOG_NEAR = 28;
